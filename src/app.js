@@ -5,8 +5,8 @@ const productsArrCopy = productsArr.slice();
 
 const productsIdArr = productsArr.map(product => product.id);
 
-let numProducts = 5;
-const requiredSelections = 3;
+let numProducts = 3;
+const requiredSelections = 25;
 
 let selectionsMade = 0;
 
