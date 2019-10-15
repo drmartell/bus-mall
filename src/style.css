@@ -1,4 +1,15 @@
 #imgs-section {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+img {
+    width: 25%;
+    /* height: auto; */
+}
+
+#progress-text-id {
+    text-align: center;
+    margin-top: 50px;
 }
