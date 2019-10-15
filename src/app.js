@@ -5,7 +5,7 @@ const productsArrCopy = productsArr.slice();
 
 const productsIdArr = productsArr.map(product => product.id);
 
-let numProducts = 3;
+let numProducts = 5;
 const requiredSelections = 3;
 
 let selectionsMade = 0;
@@ -130,7 +130,6 @@ function saveToAllTime() {
             let productInDataStore = false;
             for (let storedProduct of dataStore) {
                 if (product.id === storedProduct.id) {
-                    console.log('found product');
                     storedProduct.shownCount += product.shownCount;
                     storedProduct.selectedCount += product.selectedCount;
                     productInDataStore = true;
@@ -138,7 +137,6 @@ function saveToAllTime() {
                 }
             }
             if (!productInDataStore) {
-                console.log('needs to be added to store');
                 dataStore.push(product);
                 localStorage.setItem(ALL_TIME_KEY, JSON.stringify(dataStore));
             }
