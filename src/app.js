@@ -24,6 +24,32 @@ for (let i = 0; i < numProducts; i++) {
 const getRandomId = (max) => Math.ceil(Math.random() * max);
 
 const trimProductsArr = () => randomProductsIdsArr = randomProductsIdsArr.slice(numProducts, numProducts * 2);
+
+
+
+var ctx = document.getElementById('results-Chart').getContext('2d');
+var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'line',
+
+    // The data for our dataset
+    data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [{
+            label: 'My First dataset',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [0, 10, 5, 2, 20, 30, 45]
+        }]
+    },
+
+    // Configuration options go here
+    options: {}
+});
+
+
+
+
 function getRandomProducts(numRandomProducts) {
     while (randomProductsIdsArr.length < (numRandomProducts * 2)) {
         let thisRandomId = getRandomId(productsIdArr.length);
@@ -48,7 +74,7 @@ function showImages() {
         imgTag.src = thisProduct.imageurl;
         imgTag.alt = thisProduct.name;
         imgTag.id = thisProduct.id;
-        imgTag.addEventListener('click', (e) => handleSelection(e.target.id));
+        imgTag.addEventListener('click', e => handleSelection(e.target.id));
         imgsSection.appendChild(imgTag);
     }
     trimProductsArr();
@@ -75,6 +101,7 @@ function handleSelection(imgIdString) {
 }
 
 function showResults() { 
+    imgsSection.style.display = 'block';
     progressDiv.textContent = `You are on the results page`;
     removeImgTags();
     renderResultsList();
@@ -85,6 +112,9 @@ function renderResultsList(alltime = false) {
 
     const ulTag = document.createElement('ul');
     if (!alltime) {
+        const h2Tag = document.createElement('h2');
+        h2Tag.textContent = `This Session`;
+        imgsSection.appendChild(h2Tag);
         imgsSection.appendChild(ulTag);
         productsArrCopy.sort((a, b) => (a.name > b.name) ? 1 : -1);
         for (let i = 0; i < productsArrCopy.length; i++) {
@@ -107,7 +137,7 @@ function renderResultsList(alltime = false) {
         for (let i = 0; i < dataStore.length; i++) {
             let thisSavedProduct = dataStore[i];
             if (thisSavedProduct.shownCount) {
-                const liTag = document.createElement('li');
+                const liTag = document.createElement('li');8
                 const thisSelectedCount = thisSavedProduct.selectedCount ? thisSavedProduct.selectedCount : 0;
                 liTag.textContent = `${thisSavedProduct.name} was show ${thisSavedProduct.shownCount} times, and chosen ${(thisSelectedCount / thisSavedProduct.shownCount) * 100}% of the times it was shown overall.`;
                 ulTag.appendChild(liTag);
@@ -123,10 +153,10 @@ function getDataStore() {
 
 function saveToAllTime() {
     const dataStore = getDataStore();
-    const productsShown = productsArrCopy.filter(product => product.shownCount > 0);
-    if (dataStore.length === 0) localStorage.setItem(ALL_TIME_KEY, JSON.stringify(productsShown));
+    const productsShownArr = productsArrCopy.filter(product => product.shownCount > 0);
+    if (dataStore.length === 0) localStorage.setItem(ALL_TIME_KEY, JSON.stringify(productsShownArr));
     else {
-        for (let product of productsShown) {
+        for (let product of productsShownArr) {
             let productInDataStore = false;
             for (let storedProduct of dataStore) {
                 if (product.id === storedProduct.id) {
@@ -138,9 +168,9 @@ function saveToAllTime() {
             }
             if (!productInDataStore) {
                 dataStore.push(product);
-                localStorage.setItem(ALL_TIME_KEY, JSON.stringify(dataStore));
             }
         }
+        localStorage.setItem(ALL_TIME_KEY, JSON.stringify(dataStore));
     }
     renderResultsList(true);
 }
