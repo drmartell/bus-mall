@@ -1,15 +1,25 @@
 #imgs-section {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    flex: 0 0 auto;
+    justify-content: space-around;
 }
 
 img {
     width: 25%;
-    /* height: auto; */
+    margin: 0 5px;
+    object-fit: contain;
 }
 
 #progress-text-id {
     text-align: center;
     margin-top: 50px;
+}
+
+/* .hidden {
+    display: none;
+} */
+
+ul {
+    list-style-type: none;
 }
