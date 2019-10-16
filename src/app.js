@@ -1,6 +1,8 @@
 import { productsArr } from '../data/products-api.js';
 import { renderChart } from '../utils/utils.js';
 
+window.onresize = () => { if (imgsSection) setSectionHeight(); };
+
 let consumerView = document.getElementById('top-h2');
 
 const ALL_TIME_KEY = 'allSales';
@@ -11,17 +13,26 @@ let selectedCountAllArr;
 let shownCountAllArr;
 
 let numProducts = 3;
-const requiredSelections = 25;
+const requiredSelections = 4;
 
 let selectionsMade = 0;
 
 const imgsSection = document.getElementById('imgs-section');
+function setSectionHeight() {
+    imgsSection.style.height = (imgsSection.offsetWidth / 2).toString() + 'px';
+} setSectionHeight();
 const progressDiv = document.getElementById('progress-text-id');
+const resultsSection = document.getElementById('results-section');
 const resultsChart = document.getElementById('results-Chart').getContext('2d');
 const allPs = document.getElementsByTagName('p');
+if (document.getElementById('home-button')) document.getElementById('home-button').addEventListener('click', () => location.href = './');
 
-if (document.getElementById('aggregate-button')) {
-    document.getElementById('aggregate-button').addEventListener('click', showAggregate);
+if (document.getElementById('clear-button')) {
+    // document.getElementById('aggregate-button').addEventListener('click', showAggregate);
+    document.getElementById('clear-button').addEventListener('click', () => {
+        localStorage.clear();
+        showAggregate();
+    });
 }
 
 if (consumerView) progressDiv.textContent = `You are on page 1 of ${requiredSelections}`;
@@ -90,29 +101,27 @@ function handleSelection(imgIdString) {
 }
 
 function showResults() { 
-    imgsSection.style.display = 'block';
+    //imgsSection.style.display = 'block';
     progressDiv.textContent = `You are on the results page`;
     removeImgTags();
     renderResultsList();
     saveToAllTime();
 }
 
-function renderResultsList(alltime = false) {
+function renderResultsList() {
+    imgsSection.style.display = 'none'; //classList.add('hidden');
     const ulTag = document.createElement('ul');
-    if (consumerView) document.getElementById('top-h2').textContent = `Thank you!`;
-    if (!alltime) {
-        const h2Tag = document.createElement('h2');
-        h2Tag.textContent = `This Session Results`;
+    if (consumerView) {
+        resultsSection.appendChild(ulTag);
+        document.getElementById('top-h2').textContent = `Thank you!`;
         for (let p of allPs) p.classList.add('hidden');
-        imgsSection.appendChild(h2Tag);
-        imgsSection.appendChild(ulTag);
         productsArrCopy.sort((a, b) => (a.name > b.name) ? 1 : -1);
         for (let i = 0; i < productsArrCopy.length; i++) {
             let thisProduct = productsArrCopy[i];
             if (thisProduct.shownCount) {
                 const liTag = document.createElement('li');
                 const thisSelectedCount = thisProduct.selectedCount ? thisProduct.selectedCount : 0;
-                liTag.textContent = `${thisProduct.name} was shown ${thisProduct.shownCount} times, and chosen ${(thisSelectedCount / thisProduct.shownCount) * 100}% of the times it was shown in this round.`;
+                liTag.textContent = `${thisProduct.name.padEnd(10, '.')} shown ${thisProduct.shownCount} times, chosen ` + Math.round((thisSelectedCount / thisProduct.shownCount) * 100).toString().padStart(3) + `% of the time.`;
                 ulTag.appendChild(liTag);
             }
         }
@@ -122,10 +131,7 @@ function renderResultsList(alltime = false) {
         renderChart(resultsChart, selectedCountArr, shownCountArr);
     }
     else {
-        const h2Tag = document.createElement('h2');
-        h2Tag.textContent = `Overall Findings`;
-        imgsSection.appendChild(h2Tag);
-        imgsSection.appendChild(ulTag);
+        resultsSection.appendChild(ulTag);
         const dataStore = getDataStore();
         dataStore.sort((a, b) => (a.name > b.name) ? 1 : -1);
         for (let i = 0; i < dataStore.length; i++) {
@@ -133,7 +139,7 @@ function renderResultsList(alltime = false) {
             if (thisSavedProduct.shownCount) {
                 const liTag = document.createElement('li');
                 const thisSelectedCount = thisSavedProduct.selectedCount ? thisSavedProduct.selectedCount : 0;
-                liTag.textContent = `${thisSavedProduct.name} was shown ${thisSavedProduct.shownCount} times, and chosen ${(thisSelectedCount / thisSavedProduct.shownCount) * 100}% of the times it was shown overall.`;
+                liTag.textContent = `${thisSavedProduct.name.padEnd(10, '.')} shown ${thisSavedProduct.shownCount} times, chosen ${Math.round((thisSelectedCount / thisSavedProduct.shownCount) * 100).toString().padStart(3)}% of the time.`;
                 ulTag.appendChild(liTag);
             }
         }
@@ -177,7 +183,8 @@ function prepForDisplay() {
 }
 
 function showAggregate() {
-    renderResultsList(true);
+    renderResultsList();
     if (!consumerView) prepForDisplay();
     renderChart(resultsChart, selectedCountAllArr, shownCountAllArr);
 }
+if (!consumerView) showAggregate();
