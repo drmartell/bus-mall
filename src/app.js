@@ -1,9 +1,12 @@
 import { productsArr } from '../data/products-api.js';
+import { renderChart } from '../utils/utils.js';
 
 const ALL_TIME_KEY = 'allSales';
 const productsArrCopy = productsArr.slice();
 
 const productsIdArr = productsArr.map(product => product.id);
+let selectedCountArr;
+let shownCountArr;
 
 let numProducts = 3;
 const requiredSelections = 25;
@@ -12,6 +15,7 @@ let selectionsMade = 0;
 
 const imgsSection = document.getElementById('imgs-section');
 const progressDiv = document.getElementById('progress-text-id');
+const resultsChart = document.getElementById('results-Chart').getContext('2d');
 
 progressDiv.textContent = `You are on page 1 of ${requiredSelections}`;
 
@@ -24,31 +28,6 @@ for (let i = 0; i < numProducts; i++) {
 const getRandomId = (max) => Math.ceil(Math.random() * max);
 
 const trimProductsArr = () => randomProductsIdsArr = randomProductsIdsArr.slice(numProducts, numProducts * 2);
-
-
-
-var ctx = document.getElementById('results-Chart').getContext('2d');
-var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'line',
-
-    // The data for our dataset
-    data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-            label: 'My First dataset',
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [0, 10, 5, 2, 20, 30, 45]
-        }]
-    },
-
-    // Configuration options go here
-    options: {}
-});
-
-
-
 
 function getRandomProducts(numRandomProducts) {
     while (randomProductsIdsArr.length < (numRandomProducts * 2)) {
@@ -122,7 +101,7 @@ function renderResultsList(alltime = false) {
             if (thisProduct.shownCount) {
                 const liTag = document.createElement('li');
                 const thisSelectedCount = thisProduct.selectedCount ? thisProduct.selectedCount : 0;
-                liTag.textContent = `${thisProduct.name} was show ${thisProduct.shownCount} times, and chosen ${(thisSelectedCount / thisProduct.shownCount) * 100}% of the times it was shown in this round.`;
+                liTag.textContent = `${thisProduct.name} was shown ${thisProduct.shownCount} times, and chosen ${(thisSelectedCount / thisProduct.shownCount) * 100}% of the times it was shown in this round.`;
                 ulTag.appendChild(liTag);
             }
         }
@@ -137,9 +116,9 @@ function renderResultsList(alltime = false) {
         for (let i = 0; i < dataStore.length; i++) {
             let thisSavedProduct = dataStore[i];
             if (thisSavedProduct.shownCount) {
-                const liTag = document.createElement('li');8
+                const liTag = document.createElement('li');
                 const thisSelectedCount = thisSavedProduct.selectedCount ? thisSavedProduct.selectedCount : 0;
-                liTag.textContent = `${thisSavedProduct.name} was show ${thisSavedProduct.shownCount} times, and chosen ${(thisSelectedCount / thisSavedProduct.shownCount) * 100}% of the times it was shown overall.`;
+                liTag.textContent = `${thisSavedProduct.name} was shown ${thisSavedProduct.shownCount} times, and chosen ${(thisSelectedCount / thisSavedProduct.shownCount) * 100}% of the times it was shown overall.`;
                 ulTag.appendChild(liTag);
             }
         }
@@ -173,4 +152,8 @@ function saveToAllTime() {
         localStorage.setItem(ALL_TIME_KEY, JSON.stringify(dataStore));
     }
     renderResultsList(true);
+    dataStore.sort((a, b) => (a.name > b.name) ? 1 : -1);
+    selectedCountArr = dataStore.map(product => product.selectedCount ? product.selectedCount : 0);
+    shownCountArr = dataStore.map(product => (product.shownCount ? product.shownCount : 0) - (product.selectedCount ? product.selectedCount : 0));
+    renderChart(resultsChart, selectedCountArr, shownCountArr);
 }

@@ -24,3 +24,7 @@ img {
 ul {
     list-style-type: none;
 }
+
+#results-Chart {
+    margin-right: 15px;
+}
