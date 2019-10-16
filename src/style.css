@@ -28,3 +28,7 @@ ul {
 #results-Chart {
     margin-right: 15px;
 }
+
+.hidden {
+    display: none;
+}

@@ -1,12 +1,14 @@
 import { productsArr } from '../data/products-api.js';
 import { renderChart } from '../utils/utils.js';
 
+let consumerView = document.getElementById('top-h2');
+
 const ALL_TIME_KEY = 'allSales';
 const productsArrCopy = productsArr.slice();
 
 const productsIdArr = productsArr.map(product => product.id);
-let selectedCountArr;
-let shownCountArr;
+let selectedCountAllArr;
+let shownCountAllArr;
 
 let numProducts = 3;
 const requiredSelections = 25;
@@ -16,14 +18,20 @@ let selectionsMade = 0;
 const imgsSection = document.getElementById('imgs-section');
 const progressDiv = document.getElementById('progress-text-id');
 const resultsChart = document.getElementById('results-Chart').getContext('2d');
+const allPs = document.getElementsByTagName('p');
 
-progressDiv.textContent = `You are on page 1 of ${requiredSelections}`;
+if (document.getElementById('aggregate-button')) {
+    document.getElementById('aggregate-button').addEventListener('click', showAggregate);
+}
+
+if (consumerView) progressDiv.textContent = `You are on page 1 of ${requiredSelections}`;
 
 let randomProductsIdsArr = [];
 
 for (let i = 0; i < numProducts; i++) {
     randomProductsIdsArr.push('');
 }
+
 
 const getRandomId = (max) => Math.ceil(Math.random() * max);
 
@@ -57,7 +65,9 @@ function showImages() {
         imgsSection.appendChild(imgTag);
     }
     trimProductsArr();
-} showImages();
+}
+
+if (consumerView) showImages();
 
 function removeImgTags() {
     imgsSection.innerHTML = '';
@@ -88,11 +98,12 @@ function showResults() {
 }
 
 function renderResultsList(alltime = false) {
-
     const ulTag = document.createElement('ul');
+    if (consumerView) document.getElementById('top-h2').textContent = `Thank you!`;
     if (!alltime) {
         const h2Tag = document.createElement('h2');
-        h2Tag.textContent = `This Session`;
+        h2Tag.textContent = `This Session Results`;
+        for (let p of allPs) p.classList.add('hidden');
         imgsSection.appendChild(h2Tag);
         imgsSection.appendChild(ulTag);
         productsArrCopy.sort((a, b) => (a.name > b.name) ? 1 : -1);
@@ -105,6 +116,10 @@ function renderResultsList(alltime = false) {
                 ulTag.appendChild(liTag);
             }
         }
+        productsArrCopy.sort((a, b) => (a.name > b.name) ? 1 : -1);
+        const selectedCountArr = productsArrCopy.map(product => product.selectedCount ? product.selectedCount : 0);
+        const shownCountArr = productsArrCopy.map(product => (product.shownCount ? product.shownCount : 0) - (product.selectedCount ? product.selectedCount : 0));
+        renderChart(resultsChart, selectedCountArr, shownCountArr);
     }
     else {
         const h2Tag = document.createElement('h2');
@@ -151,9 +166,18 @@ function saveToAllTime() {
         }
         localStorage.setItem(ALL_TIME_KEY, JSON.stringify(dataStore));
     }
-    renderResultsList(true);
+    prepForDisplay();
+}
+
+function prepForDisplay() {
+    const dataStore = getDataStore();
     dataStore.sort((a, b) => (a.name > b.name) ? 1 : -1);
-    selectedCountArr = dataStore.map(product => product.selectedCount ? product.selectedCount : 0);
-    shownCountArr = dataStore.map(product => (product.shownCount ? product.shownCount : 0) - (product.selectedCount ? product.selectedCount : 0));
-    renderChart(resultsChart, selectedCountArr, shownCountArr);
+    selectedCountAllArr = dataStore.map(product => product.selectedCount ? product.selectedCount : 0);
+    shownCountAllArr = dataStore.map(product => (product.shownCount ? product.shownCount : 0) - (product.selectedCount ? product.selectedCount : 0));
+}
+
+function showAggregate() {
+    renderResultsList(true);
+    if (!consumerView) prepForDisplay();
+    renderChart(resultsChart, selectedCountAllArr, shownCountAllArr);
 }
