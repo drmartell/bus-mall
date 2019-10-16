@@ -13,7 +13,7 @@ let selectedCountAllArr;
 let shownCountAllArr;
 
 let numProducts = 3;
-const requiredSelections = 4;
+const requiredSelections = 25;
 
 let selectionsMade = 0;
 
@@ -28,7 +28,6 @@ const allPs = document.getElementsByTagName('p');
 if (document.getElementById('home-button')) document.getElementById('home-button').addEventListener('click', () => location.href = './');
 
 if (document.getElementById('clear-button')) {
-    // document.getElementById('aggregate-button').addEventListener('click', showAggregate);
     document.getElementById('clear-button').addEventListener('click', () => {
         localStorage.clear();
         showAggregate();
@@ -101,7 +100,6 @@ function handleSelection(imgIdString) {
 }
 
 function showResults() { 
-    //imgsSection.style.display = 'block';
     progressDiv.textContent = `You are on the results page`;
     removeImgTags();
     renderResultsList();
@@ -109,7 +107,7 @@ function showResults() {
 }
 
 function renderResultsList() {
-    imgsSection.style.display = 'none'; //classList.add('hidden');
+    imgsSection.style.display = 'none';
     const ulTag = document.createElement('ul');
     if (consumerView) {
         resultsSection.appendChild(ulTag);

@@ -33,7 +33,7 @@ export function renderChart(thisResultsChart, thisSelectedCountArr, thisShownCou
                     ticks: {
                         beginAtZero: true,
                         fontFamily: "'Open Sans Bold', sans-serif",
-                        fontSize: 11
+                        fontSize: 14
                     },
                     scaleLabel:{
                         display: false
@@ -51,7 +51,7 @@ export function renderChart(thisResultsChart, thisSelectedCountArr, thisShownCou
                     },
                     ticks: {
                         fontFamily: "'Open Sans Bold', sans-serif",
-                        fontSize: 11
+                        fontSize: 14
                     },
                     stacked: true
                 }]
