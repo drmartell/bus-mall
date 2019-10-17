@@ -1,12 +1,12 @@
 import { productsArr } from '../data/products-api.js';
-import { renderChart } from '../utils/utils.js';
+import { getProductById, renderChart } from '../utils/utils.js';
 
 window.onresize = () => { if (imgsSection) setSectionHeight(); };
 
 let consumerView = document.getElementById('top-h2');
 
 const ALL_TIME_KEY = 'allSales';
-const productsArrCopy = productsArr.slice();
+export const productsArrCopy = productsArr.slice();
 
 const productsIdArr = productsArr.map(product => product.id);
 let selectedCountAllArr;
@@ -19,7 +19,7 @@ let selectionsMade = 0;
 
 const imgsSection = document.getElementById('imgs-section');
 function setSectionHeight() {
-    imgsSection.style.height = (imgsSection.offsetWidth / 2).toString() + 'px';
+    if (imgsSection) imgsSection.style.height = (imgsSection.offsetWidth / 2).toString() + 'px';
 } setSectionHeight();
 const progressDiv = document.getElementById('progress-text-id');
 const resultsSection = document.getElementById('results-section');
@@ -57,12 +57,6 @@ function getRandomProducts(numRandomProducts) {
         }
     }
 } getRandomProducts(numProducts);
-
-function getProductById(productId) {
-    for (let product of productsArrCopy)
-        if (product.id === productId)
-            return product;
-}
 
 function showImages() {
     for (let i = 0; i < numProducts; i++) {
@@ -119,7 +113,8 @@ function renderResultsList() {
             if (thisProduct.shownCount) {
                 const liTag = document.createElement('li');
                 const thisSelectedCount = thisProduct.selectedCount ? thisProduct.selectedCount : 0;
-                liTag.textContent = `${thisProduct.name.padEnd(10, '.')} shown ${thisProduct.shownCount} times, chosen ` + Math.round((thisSelectedCount / thisProduct.shownCount) * 100).toString().padStart(3) + `% of the time.`;
+                let selectedPercent = Math.round((thisSelectedCount / thisProduct.shownCount) * 100);
+                liTag.innerHTML = `${thisProduct.name.padEnd(10, '.')} shown ${thisProduct.shownCount} times, chosen ${'&nbsp'.repeat(3 - selectedPercent.toString().length) + selectedPercent}% of the time.`;
                 ulTag.appendChild(liTag);
             }
         }

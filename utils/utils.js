@@ -1,4 +1,12 @@
 import { productsArr } from '../data/products-api.js';
+import { productsArrCopy } from '../src/app.js';
+
+export function getProductById(productId) {
+    for (let product of productsArrCopy)
+        if (product.id === productId)
+            return product;
+        else return productsArrCopy[0];
+}
 
 const myLabels = productsArr.map(product => product.name);
 
